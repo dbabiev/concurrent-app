@@ -9,14 +9,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CyclicBarrier;
 
-public class FileIndexer extends Helper implements Callable<HandleTime> {
+public class TextFileIndexer extends Helper implements Callable<HandleTime> {
 
     private Path filePath = null;
     private CyclicBarrier startBarrier = null;
     //private CountDownLatch finishLatch = null;
     private ConcurrentMap<String, Map<String, Integer>> index = null;
 
-    public FileIndexer(Path filePath, CyclicBarrier startBarrier, /*CountDownLatch finishLatch,*/ ConcurrentMap<String, Map<String, Integer>> index) {
+    public TextFileIndexer(Path filePath, CyclicBarrier startBarrier, /*CountDownLatch finishLatch,*/ ConcurrentMap<String, Map<String, Integer>> index) {
         this.name = filePath.getFileName().toString();
         this.filePath = filePath;
         this.startBarrier = startBarrier;

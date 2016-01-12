@@ -7,31 +7,35 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+/**
+ *  FileService
+ */
+
 public class FileService extends Helper {
 
     public FileService(String name) {
         this.name = name;
     }
 
-    public Map<String, Map<String, Integer>> fileIndex(Path pathDirectory) {
+    public Map<String, Map<String, Integer>> textFileIndex(Path pathDirectory) {
+        // result index
         ConcurrentMap<String, Map<String, Integer>> index = new ConcurrentHashMap<>();
+        // directory of indexing files
         try(DirectoryStream<Path> directory = Files.newDirectoryStream(pathDirectory, "*.txt")) {
+            // paths of indexing files
             List<Path> filePaths = new ArrayList<>();
             for (Path filePath : directory) { filePaths.add(filePath); }
-
+            // barrier to similar start
             CyclicBarrier startBarrier = new CyclicBarrier(filePaths.size());
-            //CountDownLatch finishLatch = new CountDownLatch(filePaths.size());
+            // executor of calculation
             ExecutorService executor = Executors.newCachedThreadPool();
+            // list of result futures (for each file index)
             List<Future> results = new ArrayList<>();
-            for(Path path : filePaths) { results.add(executor.submit(new FileIndexer(path, startBarrier, /*finishLatch,*/ index))); }
-
-
-
+            // start index
+            for(Path path : filePaths) { results.add(executor.submit(new TextFileIndexer(path, startBarrier, index))); }
+            // log all results
             results.forEach((f) -> namedLog(future(f).toString()));
-            System.out.println(2);
-            //finishLatch.await();
-            System.out.println(3);
-
+            // print indexing data
             index.forEach((word, fileMap) -> {
                 List<String> lines = new ArrayList<>();
                 for(Map.Entry<String, Integer> fileEntry : fileMap.entrySet()) {
@@ -39,7 +43,7 @@ public class FileService extends Helper {
                 }
                 log(word, lines.stream().collect(Collectors.joining(", ")));
             });
-
+            // shutdown executor
             executor.shutdown();
         }
         catch (Exception e) {

@@ -14,13 +14,6 @@ public class Helper {
 
     final protected String _2strFormat = "%s (%s)";
 
-/*    protected Comparator maxSize = new Comparator<Integer>() {
-        @Override
-        public int compare(Integer o1, Integer o2) {
-            return (o1 > o2) ? 1 : 0;
-        }
-    };*/
-
     protected String _2format(String format, String one, String two){
         return String.format("%s(%s)", one, two);
     }
